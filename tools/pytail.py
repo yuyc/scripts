@@ -36,7 +36,8 @@ def tail(filename):
                 fileseek = filename.tell()
             time.sleep(0.5)
         except KeyboardInterrupt:
-            sys.exit(0)
+            filename.close()
+            sys.exit(0):
 
 def readlines(filename,linenum):
     ""
