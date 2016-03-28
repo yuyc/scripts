@@ -25,6 +25,7 @@ def tail(filename):
     filename = open(filename,'r')
     filename.seek(0,2)
     fileseek = filename.tell()
+    readlines(filename,10)
     while True:
         try:
             filename.seek(0,2)
@@ -48,6 +49,16 @@ def readlines(filename,linenum):
     for i in f.readlines()[readlines:]:
         print i,
 
+def optparser_f(opts):
+    ""
+    opts = opts.split(",")
+    return opts
+
+def multirun(opts):
+    for o in opts:
+        client_thread = threading.Thread(target=tail,args=(o,))
+        client_thread.start()
+
 def main():
         ""
         global filename
@@ -65,12 +76,11 @@ def main():
             if o in ("-h","--help"):
                 usage()
             if o in ("-f","--file"):
-                print a 
+                opts = optparser_f(a)
             if o in ("-n","--num"):
                 readlines(filename,int(a))
             if o in ("-m","--monit"):
-                readlines(filename,10)
-                tail(filename)
+                multirun(opts)
                 
 if __name__ == "__main__":
     main()
