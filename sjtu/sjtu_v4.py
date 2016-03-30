@@ -12,8 +12,8 @@ import logging
 SjtuEntryUrl = 'http://www.sjtuce.net/xxpt/jrJxpjLogin.aspx'
 SjtuNewUrl = 'http://www.sjtuce.net/xxpt/jrJxpjMainNew.aspx'
 reqcookielist = []
-user='FY14220044'
-password='123456'
+user='FY14220063'
+password='a19910912'
 
 def UrlTransfer(str):
     str = urllib.quote_plus(str)
@@ -149,11 +149,17 @@ def GetDownloadUrls(Lessiondate,LessionMark):
     print LessionMark+' 任务完成' 
 
 if __name__ == '__main__':
-    
+    '''
+    msg = GetTerminfo()
+    for i in msg[1]:
+        print i
+    '''
     lessons = CheckingAttendance()
     for i in lessons:
         for xueqi,lm in i.items():
             GetDownloadUrls(xueqi,lm)
+
+
     '''
     Eventtarget = urllib.quote_plus('_ctl0$MainContent$dgFileRange$_ctl2$_ctl0')
     Lessiondate = urllib.quote_plus('2015-2016.1')

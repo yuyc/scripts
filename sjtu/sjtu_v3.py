@@ -157,7 +157,7 @@ def GetDownloadUrls(Lessiondate,LessionMark):
         Eventtarget = a.attrs.get('href').split('\'')[1]
         Click(Eventtarget,Lessiondate,LessionMark)
     print LessionMark+' 任务完成' 
-'''       
+    
 Eventtarget = '_ctl0$MainContent$dgFileRange$_ctl2$_ctl0'
 xueqi = '2015-2016.1'
 LessionMark = '15161039  |29680'
@@ -169,7 +169,7 @@ LessionMark = '15161039  |29680'
 GetDownloadUrls(xueqi,LessionMark)
 
 
-lessons = CheckingAttendance()
+lessions = CheckingAttendance()
 for i in lessions:
     for xueqi,lm in i.items():
         GetDownloadUrls(xueqi,lm)
