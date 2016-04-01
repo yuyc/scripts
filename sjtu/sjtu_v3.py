@@ -20,8 +20,8 @@ import time
 SjtuEntryUrl = 'http://www.sjtuce.net/xxpt/jrJxpjLogin.aspx'
 SjtuNewUrl = 'http://www.sjtuce.net/xxpt/jrJxpjMainNew.aspx'
 reqcookielist = []
-user='FY14220044'
-password='a19910912'
+user=''
+password=''
 
 def UrlTransfer(str):
     str = urllib.quote_plus(str)

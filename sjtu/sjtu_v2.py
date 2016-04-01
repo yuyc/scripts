@@ -22,8 +22,8 @@ import chardet
 SjtuEntryUrl = 'http://www.sjtuce.net/xxpt/jrJxpjLogin.aspx'
 SjtuNewUrl = 'http://www.sjtuce.net/xxpt/jrJxpjMainNew.aspx'
 reqcookielist = []
-user='FY14220063'
-password='a19910912'
+user=''
+password=''
 def sqlexec(sql):
     conn = MySQLdb.connect(host='192.168.202.202',user='yuyc',passwd='123456',db='kq',charset='utf8')
     cursor = conn.cursor()
