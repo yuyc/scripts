@@ -12,8 +12,8 @@ import logging
 SjtuEntryUrl = 'http://www.sjtuce.net/xxpt/jrJxpjLogin.aspx'
 SjtuNewUrl = 'http://www.sjtuce.net/xxpt/jrJxpjMainNew.aspx'
 reqcookielist = []
-user=''
-password=''
+user='FY14220063'
+password='a19910912'
 
 def UrlTransfer(str):
     str = urllib.quote_plus(str)
@@ -148,16 +148,42 @@ def GetDownloadUrls(Lessiondate,LessionMark):
         Click(Eventtarget,Lessiondate,LessionMark,viewstatestr)
     print LessionMark+' 任务完成' 
 
+def GetMp4Urls(Lessiondate,LessionMark):
+
+    url = 'http://www.sjtuce.net/xxpt/jrJxpjVideoFtp.aspx'
+    xueqi = urllib.quote_plus(Lessiondate)
+    dplKc = urllib.quote_plus(LessionMark)
+    cookie = getlogincookie(user,password)['cookie']
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    urllib2.install_opener(opener)
+    reqres = urllib2.urlopen(url)
+    contents = reqres.read()
+    soup = BeautifulSoup(contents,'lxml')
+    viewstatestr = get_ViewState(soup)
+    postdata = '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3AMainContent%3AButton4=%E6%98%BE%E7%A4%BA&_ctl0%3Ahid='
+    req = urllib2.urlopen(url,postdata)
+    contents = req.read()
+    soup = BeautifulSoup(contents,'lxml')
+    viewstatestr = get_ViewState(soup)
+    print req.geturl()
+    print soup
+    tmp = soup.find_all(name='a',text='点击下载')
+    print tmp
+
+
+
 if __name__ == '__main__':
     '''
     msg = GetTerminfo()
     for i in msg[1]:
         print i
-    '''
+    
     lessons = CheckingAttendance()
     for i in lessons:
         for xueqi,lm in i.items():
-            GetDownloadUrls(xueqi,lm)
+            print xueqi,lm
+    '''
+    GetMp4Urls('2015-2016.2','15162048  |29685')
 
 
     '''
