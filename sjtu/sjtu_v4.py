@@ -148,45 +148,80 @@ def GetDownloadUrls(Lessiondate,LessionMark):
         Click(Eventtarget,Lessiondate,LessionMark,viewstatestr)
     print LessionMark+' 任务完成' 
 
-def GetMp4Urls(Lessiondate,LessionMark):
 
+def GetUrlViewstate(url,postdata=None):
+    cookie = getlogincookie(user,password)['cookie']
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    urllib2.install_opener(opener)
+    if postdata:
+        req = urllib2.urlopen(url,postdata)
+    else:
+        req = urllib2.urlopen(url)
+    contents = req.read()
+    soup = BeautifulSoup(contents,'lxml')
+    viewstatestr = get_ViewState(soup)
+    return viewstatestr
+
+def GetMp4Urls(Lessiondate,LessionMark):
     url = 'http://www.sjtuce.net/xxpt/jrJxpjVideoFtp.aspx'
     xueqi = urllib.quote_plus(Lessiondate)
     dplKc = urllib.quote_plus(LessionMark)
     cookie = getlogincookie(user,password)['cookie']
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-    urllib2.install_opener(opener)
-    reqres = urllib2.urlopen(url)
-    contents = reqres.read()
-    soup = BeautifulSoup(contents,'lxml')
-    viewstatestr = get_ViewState(soup)
+    viewstatestr = urllib.quote_plus(GetUrlViewstate(url))
     postdata = '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3AMainContent%3AButton4=%E6%98%BE%E7%A4%BA&_ctl0%3Ahid='
     req = urllib2.urlopen(url,postdata)
     contents = req.read()
     soup = BeautifulSoup(contents,'lxml')
-    viewstatestr = get_ViewState(soup)
-    print req.geturl()
-    print soup
     tmp = soup.find_all(name='a',text='点击下载')
-    print tmp
+
+    for a in tmp:
+        Eventtarget = a.attrs.get('href').split('\'')[1]
+        Down(Eventtarget,Lessiondate,LessionMark)
+    print LessionMark+' 任务完成' 
+
+
+def Down(Eventtarget,Lessiondate,LessionMark):
+    jsclick = urllib.quote_plus(Eventtarget)
+    xueqi = urllib.quote_plus(Lessiondate)
+    dplKc = urllib.quote_plus(LessionMark)
+    cookie = getlogincookie(user,password)['cookie']
+    postdata = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
+    url = 'http://www.sjtuce.net/xxpt/jrJxpjVideoFtp.aspx'    
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+    opener.add_handler = urllib2.FTPHandler()
+    opener.add_handler = urllib2.HTTPHandler(debuglevel=logging.DEBUG)
+    opener.add_handler = urllib2.HTTPSHandler(debuglevel=logging.DEBUG)
+    opener.add_handler = urllib2.HTTPRedirectHandler()
+    urllib2.install_opener(opener)
+    viewstatestr = GetUrlViewstate(url,postdata)
+    postdata = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
+    req = urllib2.urlopen(url,postdata)
+    print req.geturl()
+    print req.headers
+    print dir(req)
+    print req.fp.read(1024)
+    print '打卡完毕'
+"""    import sys
+    sys.exit()"""
 
 
 
 if __name__ == '__main__':
-    '''
-    msg = GetTerminfo()
-    for i in msg[1]:
-        print i
+    
+    # msg = GetTerminfo()
+    # for i in msg[1]:
+    #     print i
     
     lessons = CheckingAttendance()
     for i in lessons:
         for xueqi,lm in i.items():
-            print xueqi,lm
+            GetMp4Urls(xueqi,lm)
     '''
     GetMp4Urls('2015-2016.2','15162048  |29685')
+    #url = 'http://www.sjtuce.net/xxpt/jrJxpjVideoFtp.aspx'
+    #print GetUrlViewstate(url)
 
-
-    '''
+    
     Eventtarget = urllib.quote_plus('_ctl0$MainContent$dgFileRange$_ctl2$_ctl0')
     Lessiondate = urllib.quote_plus('2015-2016.1')
     LessionMark = urllib.quote_plus('15161039  |29680')
