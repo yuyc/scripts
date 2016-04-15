@@ -7,6 +7,7 @@ import cookielib
 from bs4 import BeautifulSoup
 import re
 import logging
+import os
 
 
 SjtuEntryUrl = 'http://www.sjtuce.net/xxpt/jrJxpjLogin.aspx'
@@ -173,19 +174,19 @@ def GetMp4Urls(Lessiondate,LessionMark):
     contents = req.read()
     soup = BeautifulSoup(contents,'lxml')
     tmp = soup.find_all(name='a',text='点击下载')
-
+    viewstatestr = urllib.quote_plus(get_ViewState(soup))
     for a in tmp:
         Eventtarget = a.attrs.get('href').split('\'')[1]
-        Down(Eventtarget,Lessiondate,LessionMark)
+        Down(Eventtarget,Lessiondate,LessionMark,viewstatestr)
     print LessionMark+' 任务完成' 
 
 
-def Down(Eventtarget,Lessiondate,LessionMark):
+def Down(Eventtarget,Lessiondate,LessionMark,viewstatestr):
     jsclick = urllib.quote_plus(Eventtarget)
     xueqi = urllib.quote_plus(Lessiondate)
     dplKc = urllib.quote_plus(LessionMark)
     cookie = getlogincookie(user,password)['cookie']
-    postdata = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
+    postdataA = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
     url = 'http://www.sjtuce.net/xxpt/jrJxpjVideoFtp.aspx'    
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
     opener.add_handler = urllib2.FTPHandler()
@@ -193,16 +194,44 @@ def Down(Eventtarget,Lessiondate,LessionMark):
     opener.add_handler = urllib2.HTTPSHandler(debuglevel=logging.DEBUG)
     opener.add_handler = urllib2.HTTPRedirectHandler()
     urllib2.install_opener(opener)
-    viewstatestr = GetUrlViewstate(url,postdata)
-    postdata = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
-    req = urllib2.urlopen(url,postdata)
-    print req.geturl()
-    print req.headers
-    print dir(req)
-    print req.fp.read(1024)
-    print '打卡完毕'
-"""    import sys
-    sys.exit()"""
+    req = urllib2.urlopen(url,postdataA)
+    filename = os.path.basename(req.geturl())
+    file_buffer = ""
+    print("开始下载")
+    while True:
+        data = req.fp.read(20480000)
+        
+        if not data:
+            break
+        else:
+            print()
+            file_buffer += data
+    try:
+        file_descriptor = open(filename,"wb")
+        file_descriptor.write(file_buffer)
+        file_descriptor.close()
+        print("Down success")
+    except:
+        print("Error")
+    # contents = req.read()
+
+    # soup = BeautifulSoup(contents,'lxml')
+    # viewstatestr = get_ViewState(soup)
+    #print viewstatestr
+    # print req.code
+    # print contents
+
+    #print viewstatestr
+    # postdataB = '__EVENTTARGET='+jsclick+'&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE='+viewstatestr+'&_ctl0%3AMainContent%3Am_cbxXueqi='+xueqi+'&_ctl0%3AMainContent%3AdplKc='+dplKc+'&_ctl0%3Ahid='
+    # req = urllib2.urlopen(url,postdataA)
+    #print req.read()
+    # print req.headers
+    # print req.geturl()
+    # print req.headers
+    # print dir(req)
+    # print req.fp.read(1024)
+    # print '打卡完毕'
+
 
 
 
