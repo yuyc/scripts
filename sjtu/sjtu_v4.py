@@ -285,8 +285,9 @@ if __name__ == '__main__':
     # for i in msg[1]:
     #     print i
     
-    lessons = CheckingAttendance()
-    for i in lessons:
-        for xueqi,lm in i.items():
-            GetVideosUrls(xueqi,lm)
+    # lessons = CheckingAttendance()
+    # for i in lessons:
+    #     for xueqi,lm in i.items():
+    #         down_videos_main(xueqi,lm)
     # print get_download_directory_name("2015-2016.2","15162007  |30490")
+    GetVideosUrls("2015-2016.2","15162002  |29667")
